@@ -18,8 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,12 +35,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mod_a2treino.ui.models.AppPreferences
 import com.example.mod_a2treino.ui.preferences.DataPreferences
+import com.example.mod_a2treino.ui.repository.ApiClient
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
     onLogin: () -> Unit,
-    context: Context
+    context: Context,
+    token: String? = null,
+    onLogout: () -> Unit
 ){
 
     val preferences = DataPreferences(context = context)
@@ -63,6 +66,16 @@ fun LoginScreen(
         val temNumero = senha.any{it.isDigit()}
         val temLetra = senha.any{it.isLetter()}
         return senha.length >= 6 && temLetra && temNumero
+    }
+
+    LaunchedEffect(Unit) {
+        try {
+
+            ApiClient.validateToken(token  ?: "")
+        } catch (e: Exception) {
+            Toast.makeText(context, "Token inválido ou expirado", Toast.LENGTH_SHORT).show()
+            onLogout()
+        }
     }
 
     Column(modifier = Modifier
@@ -123,9 +136,19 @@ fun LoginScreen(
         else
             Button(
                 onClick = {
-                    if (senhaValid == false) Toast.makeText(context,"Verifique sua senha", Toast.LENGTH_SHORT).show()
-                    else if (emailValid) Toast.makeText(context,"Verifique seu email", Toast.LENGTH_SHORT).show()
-                    else onLogin()
+                    if (!senhaValid) Toast.makeText(context,"Verifique sua senha", Toast.LENGTH_SHORT).show()
+                    else if (!emailValid) Toast.makeText(context,"Verifique seu email", Toast.LENGTH_SHORT).show()
+                    else {
+                        scope.launch {
+                            val token = ApiClient.apiLogin(email,senha)
+                            preferences.toggleFirstLogin()
+                        }
+
+                        onLogin()
+
+
+                    }
+
                 }
             ) {Text("Acessar Sistema") }
     }

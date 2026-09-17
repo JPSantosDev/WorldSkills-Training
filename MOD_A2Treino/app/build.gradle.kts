@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    kotlin("plugin.serialization") version "1.9.22"
 }
 
 android {
@@ -44,6 +45,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("androidx.datastore:datastore-preferences:1.1.7")
+
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
