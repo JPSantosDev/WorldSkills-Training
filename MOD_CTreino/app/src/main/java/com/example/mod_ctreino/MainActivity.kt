@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.mod_ctreino.ui.enums.CurrentScreen
 import com.example.mod_ctreino.ui.preferences.AppPreferences
 import com.example.mod_ctreino.ui.repository.DataRepository
+import com.example.mod_ctreino.ui.screens.HomeScreen
 import com.example.mod_ctreino.ui.screens.LoginScreen
 import com.example.mod_ctreino.ui.screens.SplashScreen
 import com.example.mod_ctreino.ui.theme.MOD_CTreinoTheme
@@ -31,12 +32,20 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppRoot(){
-    var currentScreen by rememberSaveable { mutableStateOf(CurrentScreen.SPLASH) }
+    var currentScreen by rememberSaveable { mutableStateOf(CurrentScreen.HOME) }
     val context = LocalContext.current
     val preferences = AppPreferences(context)
     val repository = DataRepository(LocalContext.current)
 
     when(currentScreen){
+        CurrentScreen.HOME -> HomeScreen(
+            onHome = { currentScreen = CurrentScreen.HOME },
+            onExplore = { },
+            onExercises = { },
+            onArticles = {},
+            onPerfil = {  },
+            repository = repository,
+        )
         CurrentScreen.LOGIN -> LoginScreen(onLoginSuccess = {currentScreen = CurrentScreen.SPLASH})
 
         CurrentScreen.SPLASH -> SplashScreen(
