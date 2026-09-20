@@ -26,14 +26,18 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MOD_A2TreinoTheme {
-               AppScreens()
+                AppScreens()
             }
         }
     }
 }
 
 @Composable
-fun AppScreens(){
+fun AppScreens() {
+
+
+
+
 
     var currentScreen by remember { mutableStateOf(CurrentScreen.LOGIN) }
     val context = LocalContext.current
@@ -42,12 +46,16 @@ fun AppScreens(){
     val scope = rememberCoroutineScope()
 
 
-    when(currentScreen){
-        CurrentScreen.LOGIN -> {LoginScreen(
-            onLogin = { scope.launch { preferences.toggleFirstLogin() } },
-            context = context,
-        )}
-        CurrentScreen.SPLASHSCREEN -> { SplashScreen() }
-    }
+    when (currentScreen) {
+        CurrentScreen.LOGIN -> {
+            LoginScreen(
+                onLogout = {},
+                onLogin = { scope.launch { preferences.toggleFirstLogin() } },
+                context = context,
 
+                )
+        }
+
+        CurrentScreen.SPLASHSCREEN -> {SplashScreen()}
+    }
 }

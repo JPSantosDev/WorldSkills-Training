@@ -36,14 +36,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mod_a2treino.ui.models.AppPreferences
 import com.example.mod_a2treino.ui.preferences.DataPreferences
 import com.example.mod_a2treino.ui.repository.ApiClient
+import com.example.mod_a2treino.ui.repository.TokenManager
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
     onLogin: () -> Unit,
     context: Context,
-    token: String? = null,
-    onLogout: () -> Unit
 ){
 
     val preferences = DataPreferences(context = context)
@@ -53,7 +52,6 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var senhaVisivel by remember { mutableStateOf(false) }
-    var rememberMe by remember { mutableStateOf(false) }
     var senhaValid by remember { mutableStateOf(false) }
     var emailValid by remember { mutableStateOf(false) }
 
@@ -66,16 +64,6 @@ fun LoginScreen(
         val temNumero = senha.any{it.isDigit()}
         val temLetra = senha.any{it.isLetter()}
         return senha.length >= 6 && temLetra && temNumero
-    }
-
-    LaunchedEffect(Unit) {
-        try {
-
-            ApiClient.validateToken(token  ?: "")
-        } catch (e: Exception) {
-            Toast.makeText(context, "Token inválido ou expirado", Toast.LENGTH_SHORT).show()
-            onLogout()
-        }
     }
 
     Column(modifier = Modifier
@@ -141,14 +129,11 @@ fun LoginScreen(
                     else {
                         scope.launch {
                             val token = ApiClient.apiLogin(email,senha)
+                            TokenManager.setToken(token)
                             preferences.toggleFirstLogin()
+                            onLogin()
                         }
-
-                        onLogin()
-
-
                     }
-
                 }
             ) {Text("Acessar Sistema") }
     }

@@ -38,6 +38,7 @@ object ApiClient{
     }
 
 
+
     suspend fun apiLogin(email: String, password: String): String = withContext(Dispatchers.IO) {
         val response = ApiClient.client.post {
             url("$JWT_URL/generate_token")
@@ -53,6 +54,22 @@ object ApiClient{
         token ?: throw Exception("Token ausente")
     }
 
+    suspend fun invalidToken(token: String = ""): TokenValidationResponse = withContext(Dispatchers.IO){
+        val response = ApiClient.client.post {
+            url("$JWT_URL/validate_token")
+            setBody(TokenValidationRequest(token))
+        }
+        if (!response.status.isSuccess()) {
+            throw IllegalStateException("Erro ao validar token. Código: ${response.status.value}")
+        }
+        val validationResponse = response.body<TokenValidationResponse>().valid
+        val payload = response.body<TokenValidationResponse>().payload
+
+        return@withContext TokenValidationResponse(
+            valid = validationResponse,
+            payload = payload
+        )
+    }
     suspend fun validateToken(token: String): TokenValidationResponse = withContext(Dispatchers.IO) {
         val response = ApiClient.client.post {
             url("$JWT_URL/validate_token")
