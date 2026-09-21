@@ -49,7 +49,6 @@ fun AppScreens() {
     when (currentScreen) {
         CurrentScreen.LOGIN -> {
             LoginScreen(
-                onLogout = {},
                 onLogin = { scope.launch { preferences.toggleFirstLogin() } },
                 context = context,
 

@@ -5,7 +5,6 @@ object TokenManager {
     var token: String? = null
         private  set
 
-
     fun setToken(token: String){
         this.token = token
     }

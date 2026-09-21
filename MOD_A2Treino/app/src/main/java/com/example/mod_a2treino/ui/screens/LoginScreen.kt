@@ -49,6 +49,8 @@ fun LoginScreen(
 
     val state by preferences.state.collectAsStateWithLifecycle(AppPreferences())
 
+    var tokenValido = false
+
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var senhaVisivel by remember { mutableStateOf(false) }
@@ -57,9 +59,14 @@ fun LoginScreen(
 
     val scope = rememberCoroutineScope()
 
+    LaunchedEffect(Unit) {
+       tokenValido = ApiClient.validateToken(TokenManager.token ?: "").valid
+    }
+
     fun validarEmail(email: String): Boolean {
         return Patterns.EMAIL_ADDRESS .matcher(email) .matches()
     }
+
     fun validarSenha(senha: String): Boolean {
         val temNumero = senha.any{it.isDigit()}
         val temLetra = senha.any{it.isLetter()}
@@ -118,9 +125,10 @@ fun LoginScreen(
             )
             Text("Lembrar de mim")
         }
-        if (!state.firstLogin && state.rememberMe){
+        if (!state.firstLogin && state.rememberMe && tokenValido){
             Text("Pode usar biometria na próxima")
         }
+
         else
             Button(
                 onClick = {
