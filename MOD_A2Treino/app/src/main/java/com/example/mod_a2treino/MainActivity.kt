@@ -38,7 +38,6 @@ fun AppScreens() {
 
 
 
-
     var currentScreen by remember { mutableStateOf(CurrentScreen.LOGIN) }
     val context = LocalContext.current
     val preferences = DataPreferences(context)
@@ -51,7 +50,6 @@ fun AppScreens() {
             LoginScreen(
                 onLogin = { scope.launch { preferences.toggleFirstLogin() } },
                 context = context,
-
                 )
         }
 
