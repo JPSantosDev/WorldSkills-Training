@@ -23,17 +23,9 @@ object DataRepository {
             json(jsonInstance)
         }
     }
-
-
     suspend fun loadJson(context: Context) = withContext(Dispatchers.IO){
         val url = context.assets.open("bancoQuestoes.json").bufferedReader().use { it.readText() }
         val jsonDecoded = jsonInstance.decodeFromString<ListDadosDto>(url)
         jsonDecoded.perguntas
     }
-
-
-
-
-
-
 }

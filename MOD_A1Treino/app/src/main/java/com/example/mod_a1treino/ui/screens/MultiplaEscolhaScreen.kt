@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,34 +22,60 @@ import kotlinx.serialization.json.decodeFromJsonElement
 
 @Composable
 fun MultiplaEscolhaScreen(
-    questao: DadosDto
-){
-    var alternativaSelecionada by remember(questao.id){ mutableStateOf<Int?>(null) }
-    val alternativas: List<String> = DataRepository.jsonInstance.decodeFromJsonElement(questao.alternativas)
+    questao: DadosDto,
+    mostrarResultado: Boolean,
+    alternativaSelecionada: Int?,
+    onAlternativaSelecionada: (Int) -> Unit
+) {
 
+    val scroll = rememberScrollState()
+
+    val resposta: Int =
+        DataRepository.jsonInstance.decodeFromJsonElement(questao.resposta)
+
+    val alternativas: List<String> =
+        DataRepository.jsonInstance.decodeFromJsonElement(questao.alternativas)
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .verticalScroll(scroll)
     ) {
+
         Text(text = questao.enunciado)
 
         alternativas.forEachIndexed { index, alternativa ->
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 RadioButton(
                     selected = alternativaSelecionada == index,
                     onClick = {
-                        alternativaSelecionada = index
+                        if (!mostrarResultado) {
+                            onAlternativaSelecionada(index)
+                        }
                     }
                 )
-                Text(alternativa)
+
+                Text("${'a' + index}) $alternativa")
+            }
+        }
+
+        if (mostrarResultado) {
+
+            if (alternativaSelecionada == resposta) {
+                Text(
+                    text = "Resposta correta! +${questao.peso} pontos"
+                )
+            } else {
+                Text(
+                    text = "Resposta incorreta!"
+                )
             }
         }
     }
-
-
 }

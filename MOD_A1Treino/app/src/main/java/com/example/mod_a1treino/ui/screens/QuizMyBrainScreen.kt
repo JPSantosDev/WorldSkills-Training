@@ -1,12 +1,13 @@
 package com.example.mod_a1treino.ui.screens
 
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.BottomAppBar
@@ -23,28 +24,54 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.example.mod_a1treino.ui.models.DadosDto
-import com.example.mod_a1treino.ui.models.ListDadosDto
-import com.example.mod_a1treino.ui.models.PerguntaMeVf
-import com.example.mod_a1treino.ui.models.PerguntaRel
 import com.example.mod_a1treino.ui.repository.DataRepository
 import kotlinx.serialization.json.decodeFromJsonElement
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuizMyBrainScreen(onHome: () -> Unit) {
+fun QuizMyBrainScreen(onHome: () -> Unit, ) {
 
     val context = LocalContext.current
+    val activity = context as Activity
 
-    var questoes by remember { mutableStateOf<List<DadosDto>>(emptyList()) }
-    var questaoAtual by remember { mutableIntStateOf(0) }
+    var requestedOrientation by rememberSaveable() { mutableIntStateOf(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) }
+    var mostrarResultado by rememberSaveable() { mutableStateOf(false) }
+
+    var score by rememberSaveable() { mutableIntStateOf(0) }
+
+    var questoes by remember() { mutableStateOf<List<DadosDto>>(emptyList()) }
+    var questaoAtual by rememberSaveable() { mutableIntStateOf(0) }
+    var alternativaSelecionada by remember() { mutableStateOf<Int?>(null) }
 
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(Unit){
         questoes = DataRepository.loadJson(context)
+    }
+
+    LaunchedEffect(questaoAtual) {
+        activity.requestedOrientation = requestedOrientation
+    }
+
+    fun onClickProximo(){
+        if (!mostrarResultado) {
+            val questao = questoes[questaoAtual]
+
+            val resposta: Int = DataRepository.jsonInstance.decodeFromJsonElement(questao.resposta)
+            if (resposta == alternativaSelecionada) {
+                score+=questao.peso
+            }
+            mostrarResultado = true
+
+        } else{
+            questaoAtual++
+            mostrarResultado = false
+            alternativaSelecionada = null
+        }
     }
 
     Scaffold(
@@ -72,7 +99,7 @@ fun QuizMyBrainScreen(onHome: () -> Unit) {
                         Spacer(Modifier.weight(1f))
                         Button(
                             onClick = {
-                                questaoAtual++
+                                onClickProximo()
                             }
                         ) {
                             Text("Próximo")
@@ -93,15 +120,25 @@ fun QuizMyBrainScreen(onHome: () -> Unit) {
                 when (questao.tipo) {
 
                     "VF" -> {
-                        VerdadeiroFalsoScreen(questao = questao)
+                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
+                        VerdadeiroFalsoScreen(questao)
                     }
 
                     "ME" -> {
-                        MultiplaEscolhaScreen(questao = questao)
+                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
+                        MultiplaEscolhaScreen(
+                            questao,
+                            mostrarResultado,
+                            alternativaSelecionada,
+                            onAlternativaSelecionada = { alternativaSelecionada=it }
+                        )
                     }
 
                     "REL" -> {
-                        RelacionalScreen(questao = questao)
+                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                        RelacionalScreen(questao)
                     }
                 }
             }
