@@ -9,7 +9,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import com.example.mod_d1treino.enums.CurrentScreen
+import com.example.mod_d1treino.ui.repository.DataRepository
+import com.example.mod_d1treino.ui.screen.CadastroCourseScreen
 import com.example.mod_d1treino.ui.screen.DashboardScreen
 import com.example.mod_d1treino.ui.theme.MOD_D1TreinoTheme
 
@@ -28,20 +31,29 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppRoot(){
-    var currentScreen by remember { mutableStateOf(CurrentScreen.DASHBOARD) }
+    var currentScreen by remember { mutableStateOf(CurrentScreen.CADASTRO_CURSOS) }
+    val repository = DataRepository(context = LocalContext.current)
 
     when(currentScreen){
         CurrentScreen.DASHBOARD -> DashboardScreen(
-            onHome = {  },
-            onAdd = {  },
-            onTeachers = {  },
-            onRelatorio = {  }
+            onHome = {},
+            onAdd = { currentScreen = CurrentScreen.CADASTRO_CURSOS },
+            onTeachers = { currentScreen = CurrentScreen.LIST_PROFESSORES },
+            onRelatorio = { currentScreen = CurrentScreen.RELATORIOS }
         )
 
-        CurrentScreen.CADASTRO_CURSOS -> TODO()
+        CurrentScreen.CADASTRO_CURSOS -> CadastroCourseScreen(
+            onHome = { currentScreen = CurrentScreen.DASHBOARD },
+            repository = repository
+
+        )
+
         CurrentScreen.LIST_PROFESSORES -> TODO()
+
         CurrentScreen.CADASTRO_PROFESSORES -> TODO()
+
         CurrentScreen.RELATORIOS -> TODO()
+
     }
 
 }

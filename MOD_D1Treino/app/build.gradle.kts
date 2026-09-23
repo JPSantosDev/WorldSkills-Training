@@ -40,6 +40,8 @@ dependencies {
     implementation(libs.androidx.material3)
     val ktorVersion = "3.0.0"
 
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
+
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
