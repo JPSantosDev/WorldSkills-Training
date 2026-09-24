@@ -34,9 +34,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mod_d1treino.ui.components.Modal
 import com.example.mod_d1treino.ui.components.NoGridModeCursos
 import com.example.mod_d1treino.ui.models.Curso
+import com.example.mod_d1treino.ui.preferences.CoursePreferences
 import com.example.mod_d1treino.ui.repository.DataRepository
 import kotlin.collections.emptyList
 
@@ -46,21 +48,27 @@ fun DashboardScreen(
     onHome: () -> Unit,
     onAdd: () -> Unit,
     onTeachers: () -> Unit,
-    onRelatorio: () -> Unit
+    onRelatorio: () -> Unit,
+    preferences: CoursePreferences
 ) {
 
-    var cursos by remember { mutableStateOf<List<Curso>>(emptyList()) }
+
     val context = LocalContext.current
     val repository = DataRepository(context = context)
+
+    val cursos by preferences.cursos.collectAsStateWithLifecycle(emptyList())
+    var cursosJson by remember { mutableStateOf<List<Curso>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        cursosJson = repository.loadCursos()
+    }
+
     var isGridMode by remember { mutableStateOf(false) }
     var busca by remember { mutableStateOf("") }
     var showLongModal by remember { mutableStateOf(false) }
     var showShortModal by remember { mutableStateOf(false) }
     var cursoSelected by remember { mutableStateOf<Curso?>(null) }
 
-    LaunchedEffect(Unit) {
-        cursos = repository.loadCursos()
-    }
 
     Scaffold(
         topBar = {
@@ -128,6 +136,7 @@ fun DashboardScreen(
                 trailingIcon = {Icon(Icons.Default.Search,contentDescription = null)}
             )
             var cursosFiltrados = cursos.filter { it.nomeBreve.contains(busca, ignoreCase = true) || it.nomeCompleto.contains(busca, ignoreCase = true) }
+            cursosFiltrados += cursosJson.filter { it.nomeBreve.contains(busca, ignoreCase = true) || it.nomeCompleto.contains(busca, ignoreCase = true)}
             if (!isGridMode) {
                 if (cursosFiltrados.isEmpty()){
                     Text("Nenhum curso encontrado")

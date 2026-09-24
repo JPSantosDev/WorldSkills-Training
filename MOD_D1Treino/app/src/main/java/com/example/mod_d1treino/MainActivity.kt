@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.example.mod_d1treino.enums.CurrentScreen
+import com.example.mod_d1treino.ui.preferences.CoursePreferences
 import com.example.mod_d1treino.ui.repository.DataRepository
 import com.example.mod_d1treino.ui.screen.CadastroCourseScreen
 import com.example.mod_d1treino.ui.screen.DashboardScreen
@@ -31,6 +32,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppRoot(){
+
+    val context = LocalContext.current
+    val preferences = CoursePreferences(
+        context = context
+    )
     var currentScreen by remember { mutableStateOf(CurrentScreen.CADASTRO_CURSOS) }
     val repository = DataRepository(context = LocalContext.current)
 
@@ -39,13 +45,14 @@ fun AppRoot(){
             onHome = {},
             onAdd = { currentScreen = CurrentScreen.CADASTRO_CURSOS },
             onTeachers = { currentScreen = CurrentScreen.LIST_PROFESSORES },
-            onRelatorio = { currentScreen = CurrentScreen.RELATORIOS }
+            onRelatorio = { currentScreen = CurrentScreen.RELATORIOS },
+            preferences = preferences
         )
 
         CurrentScreen.CADASTRO_CURSOS -> CadastroCourseScreen(
             onHome = { currentScreen = CurrentScreen.DASHBOARD },
-            repository = repository
-
+            repository = repository,
+            preferences = preferences,
         )
 
         CurrentScreen.LIST_PROFESSORES -> TODO()
@@ -53,7 +60,5 @@ fun AppRoot(){
         CurrentScreen.CADASTRO_PROFESSORES -> TODO()
 
         CurrentScreen.RELATORIOS -> TODO()
-
     }
-
 }
