@@ -16,6 +16,7 @@ import com.example.mod_ctreino.ui.repository.DataRepository
 import com.example.mod_ctreino.ui.screens.ArtigoScreen
 import com.example.mod_ctreino.ui.screens.HomeScreen
 import com.example.mod_ctreino.ui.screens.LoginScreen
+import com.example.mod_ctreino.ui.screens.ResumoScreen
 import com.example.mod_ctreino.ui.screens.SplashScreen
 import com.example.mod_ctreino.ui.theme.MOD_CTreinoTheme
 
@@ -33,33 +34,50 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppRoot(){
-    var currentScreen by rememberSaveable { mutableStateOf(CurrentScreen.ARTIGO) }
+    var currentScreen by rememberSaveable { mutableStateOf(CurrentScreen.RESUME) }
     val context = LocalContext.current
     val preferences = AppPreferences(context)
     val repository = DataRepository(LocalContext.current)
 
     when(currentScreen){
-        CurrentScreen.HOME -> HomeScreen(
-            onHome = { currentScreen = CurrentScreen.HOME },
-            onExplore = { },
-            onExercises = { },
-            onArticles = {},
-            onPerfil = {  },
-            repository = repository,
-        )
-        CurrentScreen.LOGIN -> LoginScreen(onLoginSuccess = {currentScreen = CurrentScreen.SPLASH})
+        CurrentScreen.HOME -> {
+            HomeScreen(
+                onHome = { currentScreen = CurrentScreen.HOME },
+                onExplore = { },
+                onExercises = { },
+                onArticles = {},
+                onPerfil = {  },
+                repository = repository,
+            )
+        }
+        CurrentScreen.LOGIN -> {
+            LoginScreen(onLoginSuccess = {currentScreen = CurrentScreen.SPLASH})
+        }
 
-        CurrentScreen.SPLASH -> SplashScreen(
-            preferences = preferences,
-            splashEnd = { currentScreen = CurrentScreen.LOGIN }
-        )
-        CurrentScreen.ARTIGO -> ArtigoScreen(
-            onBack = { },
-            onCompartilhar = {},
-            onQrCode = {},
-            onThemeSwitch = {},
-            onFontChange = {  },
-            onOuvir = {  },
+        CurrentScreen.SPLASH -> {
+            SplashScreen(
+                preferences = preferences,
+                splashEnd = { currentScreen = CurrentScreen.LOGIN }
+            )
+        }
+        CurrentScreen.ARTIGO -> {
+            ArtigoScreen(
+                onBack = { },
+                onCompartilhar = {},
+                onQrCode = {},
+                onThemeSwitch = {},
+                onFontChange = {  },
+                onOuvir = {  },
+            )
+        }
+
+        CurrentScreen.RESUME -> ResumoScreen(
+            onGravar = {  },
+            onHome = {  },
+            onExplore = {  },
+            onExercises = {  },
+            onArticles = {  },
+            onProfile = {}
         )
     }
 }

@@ -117,7 +117,10 @@ fun ArtigoScreen(
 
                             IconButton(
                                 modifier = Modifier.width(120.dp),
-                                onClick = onOuvir
+                                onClick = {
+                                    isOuvindo = !isOuvindo
+                                    onOuvir()
+                                }
                             ) {
                                 Row(
                                     modifier = Modifier.width(120.dp),

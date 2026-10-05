@@ -5,6 +5,7 @@ enum class CurrentScreen {
     HOME,
     LOGIN,
     SPLASH,
-    ARTIGO
+    ARTIGO,
+    RESUME
 
 }
