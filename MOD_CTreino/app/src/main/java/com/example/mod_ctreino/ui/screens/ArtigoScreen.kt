@@ -34,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -137,13 +138,22 @@ fun ArtigoScreen(
                         }
 
                         Row(
-                            Modifier.fillMaxWidth() ,
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.DarkMode, contentDescription = null, modifier = Modifier.size(20.dp))
+                            Icon(imageVector = Icons.Default.DarkMode,contentDescription = null)
+
                             Slider(
                                 modifier = Modifier.weight(1f),
                                 state = sliderState,
+                                thumb = {
+                                    SliderDefaults.Thumb(
+                                        interactionSource = remember {MutableInteractionSource()},
+                                        thumbSize = DpSize(16.dp,16.dp),
+                                        colors = SliderDefaults.colors(thumbColor = Color.Blue),
+                                    )
+                                },
                                 track = {
                                     Box(
                                         modifier = Modifier
@@ -151,25 +161,19 @@ fun ArtigoScreen(
                                             .height(8.dp)
                                             .clip(RoundedCornerShape(4.dp))
                                             .background(Color.LightGray)
-                                    ) {
+                                    ){
                                         Box(
-                                            Modifier
+                                            modifier = Modifier
                                                 .fillMaxWidth(sliderState.value)
                                                 .fillMaxHeight()
-                                                .background(Color(0xFF1565C0))
-
+                                                .background(Color.Blue)
                                         )
                                     }
-                                },
-                                thumb = {
-                                    SliderDefaults.Thumb(
-                                        interactionSource = remember { MutableInteractionSource() },
-                                        thumbSize = DpSize(16.dp, 20.dp),
-                                        colors = SliderDefaults.colors(thumbColor = Color(0xFF1565C0))
-                                    )
                                 }
                             )
-                            Icon(Icons.Default.LightMode, contentDescription = null,modifier = Modifier.size(20.dp))
+
+                            Icon(imageVector = Icons.Default.LightMode,contentDescription = null)
+
                         }
                     }
                 }

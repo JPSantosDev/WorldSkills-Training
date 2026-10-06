@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">MOD_C Treino</string>
+    <string name="nav_summaries">Resumos</string>
+    <string name="summaries_empty">Grave seus resumos e salve aqui</string>
+    <string name="summaries_record">Gravar</string>
+    <string name="summaries_stop">Parar</string>
+    <string name="summaries_play">Reproduzir</string>
+    <string name="summaries_delete">Excluir</string>
+    <string name="summaries_recording_title">Resumo %1$d</string>
+    <string name="summaries_recording_desc">Áudio gravado</string>
+    <string name="media_error">Erro ao processar o áudio</string>
+    <string name="microphone_denied">Permissão do microfone negada</string>
 </resources>
