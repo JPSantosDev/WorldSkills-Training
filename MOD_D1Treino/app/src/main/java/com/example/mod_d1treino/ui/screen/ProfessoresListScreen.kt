@@ -82,6 +82,7 @@ fun ProfessoresListScreen(
                 }
             )
         },
+
         floatingActionButton = {
             IconButton(onClick = onAdd,modifier = Modifier.testTag("btnAdd")) {
                 Icon(Icons.Default.Add,contentDescription = null)

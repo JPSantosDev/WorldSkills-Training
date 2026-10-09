@@ -69,7 +69,7 @@ fun CadastroProfessor(
         else return null
     }
 
-    fun formatarTelefone(entrada: String): String{
+    fun formatarTelefone(entrada: String): String {
         val digitos = entrada.filter { it.isDigit() }.take(11)
         return buildString {
             digitos.forEachIndexed { index, ch ->
@@ -79,9 +79,7 @@ fun CadastroProfessor(
                 append(ch)
             }
         }
-
     }
-
 
     Scaffold(
         topBar = {
@@ -123,7 +121,7 @@ fun CadastroProfessor(
                 value = telefoneField,
                 onValueChange = { novo ->
                     val formatado = formatarTelefone(novo.text)
-                    telefoneField = TextFieldValue(
+                    telefoneField = TextFieldValue (
                         text = formatado,
                         selection = TextRange(formatado.length)   // cursor no fim
                     )
@@ -132,13 +130,13 @@ fun CadastroProfessor(
                 singleLine = true
             )
 
-            OutlinedTextField(
+            OutlinedTextField (
                 label = {Text("Descrição")},
                 value = descricao,
                 onValueChange = {descricao = it}
             )
 
-            ImageField(
+            ImageField (
                 uri = imagemUri,
                 onUriChange = {imagemUri = it }
             )

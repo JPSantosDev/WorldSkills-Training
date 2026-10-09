@@ -138,6 +138,7 @@ fun CadastroCourseScreen(
             return ""
         }
     }
+
     LaunchedEffect(Unit) {
         categorias = repository.loadCategorias()
         professores = repository.loadProfessores()
@@ -146,19 +147,19 @@ fun CadastroCourseScreen(
     fun validarCampos(): String?{
 
 
-        if (nomeCompleto.trim().length !in 10..50){
+        if (nomeCompleto.trim().length !in 10..50) {
             return "Nome completo deve ter entre 10 e 50 caracteres"
         }
 
-        if (nomeBreve.trim().length !in 3..15 ){
+        if (nomeBreve.trim().length !in 3..15 ) {
             return "Nome breve deve conter entre 3 e 15 caracteres no máximo"
         }
 
-        if (sumarioCurso.trim().length>200){
+        if (sumarioCurso.trim().length>200) {
             return "Sumário do curso deve conter 200 caracteres no máximo"
         }
 
-        if (categoriaSelecionada == null){
+        if (categoriaSelecionada == null) {
             return "Selecione uma categoria"
         }
         if (dataInicio.isBlank()){
@@ -170,8 +171,6 @@ fun CadastroCourseScreen(
         if (selectedProfessores.isEmpty()){
             return "Selecione pelo menos um professor"
         }
-
-
 
 
         //Date Validations
@@ -613,7 +612,7 @@ fun CadastroCourseScreen(
                                     professoresId = selectedProfessores.map { it.id },
                                     porcentagem = 0.0,
                                 )
-                                preferences.salvarCursos(novoCurso)
+                                preferences.salvarCurso(novoCurso)
                                 onDashboard()
                             }
                         },

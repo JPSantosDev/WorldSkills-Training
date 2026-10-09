@@ -55,6 +55,7 @@ fun ImageField(
     val scale = remember(uri) { Animatable(1f) }
     val offsetX = remember(uri) { Animatable(0f) }
     val offsetY = remember(uri) { Animatable(0f) }
+
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { escolhida->

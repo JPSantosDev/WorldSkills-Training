@@ -24,6 +24,7 @@ import com.example.mod_d1treino.ui.screen.CadastroCourseScreen
 import com.example.mod_d1treino.ui.screen.CadastroProfessor
 import com.example.mod_d1treino.ui.screen.DashboardScreen
 import com.example.mod_d1treino.ui.screen.ProfessoresListScreen
+import com.example.mod_d1treino.ui.screen.RelatorioScreen
 import com.example.mod_d1treino.ui.theme.MOD_D1TreinoTheme
 
 class MainActivity : ComponentActivity() {
@@ -97,6 +98,14 @@ fun AppRoot(){
             context = context,
         )
 
-        CurrentScreen.RELATORIOS -> TODO()
+        CurrentScreen.RELATORIOS -> RelatorioScreen(
+            professores = professores,
+            cursos = cursos,
+            onHome = { currentScreen = CurrentScreen.DASHBOARD },
+            onGerarRelatorio = { },
+            onCursos = { currentScreen = CurrentScreen.DASHBOARD },
+            onTeachers = { currentScreen = CurrentScreen.LIST_PROFESSORES },
+            onSalvar = {  },
+        ) 
     }
 }

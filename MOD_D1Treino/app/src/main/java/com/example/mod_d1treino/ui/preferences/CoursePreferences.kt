@@ -14,48 +14,45 @@ import kotlinx.serialization.json.Json
 val Context.courseDataStore by preferencesDataStore("course_preferences")
 
 class CoursePreferences(val context: Context){
-
-    private val jsonInstance = Json {
+    val json = Json {
         ignoreUnknownKeys = true
+
     }
 
     object Keys{
         val CURSOS = stringPreferencesKey("cursos")
     }
 
-    val cursos: Flow<List<Curso>> = context.courseDataStore.data
-        .map{   preferences ->
+    val cursos: Flow<List<Curso>> = context.courseDataStore.data.map { preferences ->
+        val atual = preferences[Keys.CURSOS]
 
-            val dados = preferences[Keys.CURSOS]
-            if (dados.isNullOrBlank()){
+        if (atual.isNullOrBlank()) {
+            emptyList()
+        } else {
+            try {
+                json.decodeFromString(atual)
+            } catch (e: Exception) {
                 emptyList()
-            } else{
+            }
+        }
+    }
+
+    suspend fun salvarCurso(curso: Curso) = context.courseDataStore.edit { preferences ->
+
+        val dadosAtuais = preferences[Keys.CURSOS]
+        val cursosAtuais =
+            if (dadosAtuais.isNullOrBlank()) {
+                emptyList()
+            } else {
                 try {
-                    jsonInstance.decodeFromString(dados)
-                } catch (e: Exception){
+                    json.decodeFromString<List<Curso>>(dadosAtuais)
+                } catch (e: Exception) {
                     emptyList()
                 }
             }
-        }
+        val cursosAtualizados = cursosAtuais+curso
 
-    suspend fun salvarCursos(curso: Curso){
-        context.courseDataStore.edit { preferences ->
+        preferences[Keys.CURSOS] = json.encodeToString(cursosAtualizados)
 
-            val dadosAtuais = preferences[Keys.CURSOS]
-
-            val cursosAtuais = if (dadosAtuais.isNullOrBlank()) {
-                emptyList()
-            } else{
-                try {
-                    jsonInstance.decodeFromString<List<Curso>>(dadosAtuais)
-                } catch (e: Exception){
-                    emptyList()
-                }
-            }
-
-            val cursosAtualizados = cursosAtuais+curso
-
-            preferences[Keys.CURSOS] = jsonInstance.encodeToString(cursosAtualizados)
-        }
     }
 }
