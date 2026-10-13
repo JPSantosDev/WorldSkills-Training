@@ -30,31 +30,16 @@ fun PerfilScreen(
     onUriChange: (Uri) -> Unit
 ) {
 
-
-    val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { escolhida ->
         if (escolhida != null) onUriChange(escolhida)
     }
 
-    val bitmap by produceState<ImageBitmap?>(null, key1 = uri) {
-        value = uri?.let {
-            withContext(Dispatchers.IO) {
-                runCatching {
-                    context.contentResolver.openInputStream(it)?.use { stream ->
-                        BitmapFactory.decodeStream(stream)?.asImageBitmap()
-                    }
-                }.getOrNull()
-            }
-        }
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Perfil") },
-
                 )
         }
     ) { pad->
@@ -64,13 +49,14 @@ fun PerfilScreen(
                 .padding(pad)
         ) {
             PerfilArea(
-                bitmap = bitmap,
+                uri = uri,
                 onClick = {
                     launcher.launch(
-                    PickVisualMediaRequest( ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        PickVisualMediaRequest( ActivityResultContracts.PickVisualMedia.ImageOnly)
                     )
                 }
             )
         }
     }
+
 }

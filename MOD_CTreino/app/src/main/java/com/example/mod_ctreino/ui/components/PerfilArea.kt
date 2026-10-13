@@ -27,16 +27,18 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
 fun PerfilArea(
-    bitmap: ImageBitmap?,
+    uri: Uri?,
     onClick: () -> Unit
 ) {
 
     Box(modifier = Modifier.size(96.dp)){
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -45,28 +47,35 @@ fun PerfilArea(
                 .clickable(onClick = onClick),
             contentAlignment = Alignment.Center
         ){
-            bitmap?.let {
-                Image(
-                    bitmap = it,
-                    contentDescription = "Foto de perfil",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+            if (uri == null){
+                Icon(
+                    modifier = Modifier.fillMaxSize(),
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = null
                 )
-            } ?: Icon(
-                imageVector = Icons.Default.AccountCircle,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize())
+            }
+            else{
+                AsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = uri,
+                    contentScale = ContentScale.Crop,
+                    contentDescription = null
+                )
+            }
         }
+
         Box(
+            contentAlignment = Alignment.Center,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .size(28.dp)
                 .background(Color.Gray,CircleShape)
-                .clickable(onClick = onClick),
-            contentAlignment = Alignment.Center
+                .clickable(onClick = onClick)
         ){
-            Icon(Icons.Default.CameraAlt,contentDescription = null, tint = Color.White)
+            Icon(
+                imageVector = Icons.Default.CameraAlt,
+                contentDescription = null, tint = Color.White
+            )
         }
-
     }
 }

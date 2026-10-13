@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppRoot() {
+
     var uri by rememberSaveable { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
     val preferences = remember { AppPreferences(context) }
@@ -45,7 +46,7 @@ fun AppRoot() {
     val appState by preferences.state.collectAsStateWithLifecycle(initialValue = AppState())
     val coroutineScope = rememberCoroutineScope()
 
-    var currentScreen by rememberSaveable { mutableStateOf(CurrentScreen.HOME) }
+    var currentScreen by rememberSaveable { mutableStateOf(CurrentScreen.LOGIN) }
 
     MOD_CTreinoTheme(
         darkTheme = appState.darkMode,

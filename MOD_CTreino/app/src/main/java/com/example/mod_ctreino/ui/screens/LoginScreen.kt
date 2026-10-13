@@ -84,7 +84,7 @@ fun LoginScreen(
             PinField(
                 pin = pin,
                 isError = isError,
-                onPinChange = { valor: String -> pin = valor }
+                onPinChange = { valor -> pin = valor }
             )
 
             Spacer(Modifier.height(16.dp))

@@ -1,8 +1,10 @@
 package com.example.mod_ctreino.ui.components
 
+import android.inputmethodservice.Keyboard
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -24,26 +26,23 @@ import androidx.compose.ui.unit.dp
 fun PinField(
     pin: String,
     onPinChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
     isError: Boolean = false,
 ) {
     val focusRequester = remember { FocusRequester() }
-
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
 
     Box(
-        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        Row {
+        Row() {
             repeat(4) { i ->
                 val caractere = pin.getOrNull(i)
                 Box(
                     modifier = Modifier
                         .size(48.dp)
-                        .border(1.dp, if (isError) Color.Red else Color.Gray),
+                        .border(1.dp, if (isError) Color.Red else Color.Black),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(caractere?.toString() ?: "")
@@ -56,12 +55,11 @@ fun PinField(
             textStyle = TextStyle(Color.Transparent),
             modifier = Modifier
                 .matchParentSize()
-                .focusRequester(focusRequester),
+                .focusRequester(focusRequester = focusRequester),
             value = pin,
-            onValueChange = { valor ->
-                if ((valor.all { it.isDigit() }) && valor.length <= 4) {
-                    onPinChange(valor)
-                }
+            onValueChange = { novoValor ->
+                if (novoValor.all { it.isDigit() } && novoValor.length <= 4)
+                    onPinChange(novoValor)
             },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.NumberPassword
@@ -69,3 +67,5 @@ fun PinField(
         )
     }
 }
+
+

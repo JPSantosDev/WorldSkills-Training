@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mod_ctreino.ui.model.DadosDto
 import com.example.mod_ctreino.ui.repository.DataRepository
@@ -31,78 +32,59 @@ fun Carrousel(
     artigo: List<DadosDto>
 ) {
     val paginas = artigo.take(3)
-
     val pagerState = rememberPagerState(
         initialPage = 0,
-        pageCount = { paginas.size }
+        pageCount = {paginas.size}
     )
 
     Column(
         modifier = Modifier
             .width(300.dp)
     ) {
-
         HorizontalPager(
-            state = pagerState,
             modifier = Modifier
                 .width(300.dp)
-                .height(140.dp)
-        ) { page ->
-
+                .height(140.dp),
+            state = pagerState
+        ) { page->
             val pagina = paginas[page]
 
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
+                modifier = Modifier.fillMaxSize()
             ) {
-
-                Text(
-                    text = pagina.titulo,
-                    style = MaterialTheme.typography.titleMedium
-                )
-
-                Spacer(
-                    modifier = Modifier.height(8.dp)
-                )
-
-                Text(
-                    text = "Data: ${pagina.data}"
-                )
-
-                Text(
-                    text = "Descrição: ${pagina.descricao}"
-                )
-
-                Text(
-                    text = "ID: ${pagina.id}"
-                )
+                Text(pagina.titulo)
             }
         }
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-
-            paginas.indices.forEach { index ->
+            paginas.indices.forEach { index->
 
                 Box(
                     modifier = Modifier
-                        .padding(horizontal = 3.dp)
                         .size(8.dp)
                         .clip(CircleShape)
-                        .background(
-                            if (index == pagerState.currentPage) {
-                                Color.Gray
-                            } else {
-                                Color.Black
-                            }
-                        )
+                        .background(if (index == pagerState.currentPage) Color.LightGray else Color.DarkGray)
                 )
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun PreCarrou(){
+    Carrousel(
+        artigo = listOf(
+            DadosDto(
+                id = 1,
+                titulo = "A",
+                descricao = "a",
+                data = "a"
+            )
+        )
+    )
 }
