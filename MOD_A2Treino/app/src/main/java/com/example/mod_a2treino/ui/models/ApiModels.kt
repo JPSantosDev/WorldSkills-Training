@@ -39,6 +39,11 @@ data class PayloadData(
 data class Motd(
     val message: String
 )
+
+@Serializable
+data class CommentsResponse(
+    val comments: List<Comment>
+)
 @Serializable
 data class SchoolListResponse(
     val total: Int,
@@ -54,4 +59,8 @@ data class School(
     val longitude: Double,
 )
 
-
+@Serializable
+data class Comment(
+    val autor_nome: String,
+    val comentario: String
+)
