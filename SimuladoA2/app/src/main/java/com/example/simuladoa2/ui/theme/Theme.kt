@@ -35,8 +35,8 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun SimuladoA2Theme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
+    darkTheme: Boolean = false,
+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {

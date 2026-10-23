@@ -38,6 +38,8 @@ android {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.10")
+    implementation("androidx.compose.material:material-icons-extended")
     // JSON / Kotlin Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 
