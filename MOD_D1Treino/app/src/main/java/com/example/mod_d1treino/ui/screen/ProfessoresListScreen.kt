@@ -70,13 +70,13 @@ fun ProfessoresListScreen(
         bottomBar = {
             BottomAppBar(
                 actions = {
-                    IconButton(onClick = onCursos, modifier = Modifier.weight(1f)) {
-                        Icon(Icons.Default.Book,contentDescription = null)
+                    IconButton(onClick = onCursos, modifier = Modifier.weight(1f).testTag("cursoBtn")) {
+                        Icon(Icons.Default.Book,contentDescription = null,tint = Color.Gray)
                     }
-                    IconButton(onClick = {}, modifier = Modifier.weight(1f)) {
+                    IconButton(onClick = {}, modifier = Modifier.weight(1f).testTag("teachersBtn")) {
                         Icon(Icons.Default.AccountCircle,contentDescription = null, tint = Color.Gray)
                     }
-                    IconButton(onClick = onRelatorio, modifier = Modifier.weight(1f)) {
+                    IconButton(onClick = onRelatorio, modifier = Modifier.weight(1f).testTag("relatorioBtn")) {
                         Icon(Icons.Default.Note,contentDescription = null)
                     }
                 }

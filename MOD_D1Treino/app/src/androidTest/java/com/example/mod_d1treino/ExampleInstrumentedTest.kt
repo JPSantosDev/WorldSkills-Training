@@ -98,55 +98,41 @@ class ExampleInstrumentedTest {
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun moduleTest(){
-
+        
+        rule.onNodeWithTag("relatorioBtn").performClick()
         await()
-        rule.onNodeWithTag("teachersBtn").performClick()
+        rule.onNodeWithTag("gerarBtn").performClick()
         await()
-        rule.onNodeWithTag("btnAdd").performClick()
+        rule.onNodeWithTag("cursoDropdown").performClick()
         await()
-        rule.onNodeWithTag("saveBtn").performClick()
+        rule.onNodeWithTag("dropMatemática").performClick()
         await()
-        rule.onNodeWithTag("teacherName").performTextInput("Robson Denner")
+        rule.onNodeWithTag("dropPortuguês").performClick()
         await()
-        rule.onNodeWithTag("teacherEmail").performTextInput("robson.denneremailcom")
+        rule.onNodeWithTag("dropBiologia").performClick()
         await()
-        rule.onNodeWithTag("saveBtn").performClick()
+        rule.onNodeWithTag("dropBiologia").performClick()
         await()
-        rule.onNodeWithTag("teacherEmail").performTextReplacement("robson.denner@email.com")
+        rule.onNodeWithTag("dropBiologia").performClick()
         await()
-        rule.onNodeWithTag("saveBtn").performClick()
+        rule.onNodeWithTag("relatorioBtn").performClick()
         await()
-
-
-
-        scrollUntilVisibleUp("btnDateInicio")
-        rule.onNodeWithTag("btnDateInicio").performClick()
+        rule.onNodeWithTag("professorDropdown").performClick()
         await()
-
-        rule.onNodeWithContentDescription(
-            "Usar o modo de entrada de texto"
-        ).performClick()
+        rule.onNodeWithTag("dropAna Silva").performClick()
         await()
-
-        rule.onAllNodes(hasSetTextAction()).fetchSemanticsNodes().forEachIndexed { index, node ->
-            Log.i("TEXT_FIELDS", "[$index] = $node")
-        }
-        try {
-            rule.onAllNodes(hasSetTextAction()).onFirst().performTextClearance()
-            Thread.sleep(300)
-            rule.onAllNodes(hasSetTextAction()).onFirst().performTextInput("25/09/2026")
-        } catch (e: Exception) {
-            Log.e("ERRO", "Falhou: ${e.message}")
-        }
-
+        rule.onNodeWithTag("dropCaio Martins").performClick()
         await()
-        rule.onNodeWithText("OK").performClick()
+        rule.onNodeWithTag("dropCaio Martins").performClick()
         await()
-
-
-
-
-
+        rule.onNodeWithTag("professorDropdown").performClick()
+        await()
+        rule.onNodeWithTag("gerarBtn").performClick()
+        await()
+        rule.onNodeWithTag("floatingBtn").performClick()
+        await()
+        rule.onNodeWithTag("cursoBtn").performClick()
+        await()
 
     }
 }

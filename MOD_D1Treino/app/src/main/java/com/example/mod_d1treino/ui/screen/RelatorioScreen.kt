@@ -1,5 +1,6 @@
 package com.example.mod_d1treino.ui.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -53,6 +55,8 @@ fun RelatorioScreen(
     onSalvar: () -> Unit
 ) {
 
+    val context = LocalContext.current
+
     var cursoExpanded by remember { mutableStateOf(false) }
     var professorExpanded by remember { mutableStateOf(false) }
 
@@ -67,7 +71,11 @@ fun RelatorioScreen(
             TopAppBar(
                 title = { Text("Relatórios") },
                 navigationIcon = {
-                    IconButton(onHome) {
+                    IconButton(
+                        onClick = onHome,
+                        modifier = Modifier
+                            .testTag("floatingBtn"),
+                    ) {
                         Icon(Icons.Default.Home,contentDescription = null)
                     }
                 }
@@ -77,13 +85,13 @@ fun RelatorioScreen(
         bottomBar = {
             BottomAppBar(
                 actions = {
-                    IconButton(onClick = onCursos, modifier = Modifier.weight(1f)) {
+                    IconButton(onClick = onCursos, modifier = Modifier.weight(1f).testTag("cursoBtn")) {
                         Icon(Icons.Default.Book,contentDescription = null)
                     }
                     IconButton(onClick = onTeachers, modifier = Modifier.weight(1f).testTag("teachersBtn")) {
                         Icon(Icons.Default.AccountCircle,contentDescription = null)
                     }
-                    IconButton(onClick = {}, modifier = Modifier.weight(1f)) {
+                    IconButton(onClick = {}, modifier = Modifier.weight(1f).testTag("relatorioBtn")) {
                         Icon(Icons.Default.Note,contentDescription = null,tint = Color.Gray)
                     }
                 }
@@ -92,6 +100,8 @@ fun RelatorioScreen(
 
         floatingActionButton = {
             FloatingActionButton(
+                modifier = Modifier
+                    .testTag("floatingBtn"),
                 onClick ={
                     relatorioGerado = false
                     onSalvar()
@@ -114,7 +124,9 @@ fun RelatorioScreen(
             ) {
                 OutlinedTextField(
                     label = {Text("Curso")},
-                    modifier = Modifier.menuAnchor(),
+                    modifier = Modifier
+                        .testTag("cursoDropdown")
+                        .menuAnchor(),
                     readOnly = true,
                     value = if (cursosSelecionados.isEmpty())
                         "Selecionar Curso"
@@ -128,6 +140,8 @@ fun RelatorioScreen(
                 ) {
                     cursos.forEach { curso ->
                         DropdownMenuItem(
+                            modifier = Modifier
+                                .testTag("drop"+curso.nomeCompleto),
                             text = {Text(curso.nomeCompleto)},
                             onClick = {
                                 if (cursosSelecionados.contains(curso))
@@ -146,7 +160,9 @@ fun RelatorioScreen(
             ) {
                 OutlinedTextField(
                     label = {Text("Curso")},
-                    modifier = Modifier.menuAnchor(),
+                    modifier = Modifier
+                        .testTag("professorDropdown")
+                        .menuAnchor(),
                     readOnly = true,
                     value = if (professoresSelecionados.isEmpty())
                         "Selecionar Professor"
@@ -160,6 +176,8 @@ fun RelatorioScreen(
                 ) {
                     professores.forEach { professor ->
                         DropdownMenuItem(
+                            modifier = Modifier
+                                .testTag("drop"+professor.nome),
                             text = {Text(professor.nome)},
                             onClick = {
                                 if (professoresSelecionados.contains(professor))
@@ -173,9 +191,19 @@ fun RelatorioScreen(
             }
 
             Button(
+                modifier = Modifier
+                    .testTag("gerarBtn"),
                 onClick = {
-                    relatorioGerado = true
-                    onGerarRelatorio()
+                    if (professoresSelecionados.isEmpty() || cursosSelecionados.isEmpty()) {
+                        Toast.makeText(
+                            context,
+                            "Selecione um curso ou professor",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        relatorioGerado = true
+                        onGerarRelatorio()
+                    }
                 }
             ) {
                 Text("Gerar Relatório")
@@ -188,17 +216,15 @@ fun RelatorioScreen(
                     .size(300.dp)
                     .border(1.dp,Color.Black),
                 contentAlignment = Alignment.Center,
-            ){
+            ) {
                 Column() {
-                    if (relatorioGerado){
+                    if (relatorioGerado) {
                         Text("Professores: \n")
                         Text(professoresSelecionados.joinToString("\n, \n"))
 
                         Text("Cursos: \n")
                         Text(cursosSelecionados.joinToString("\n, \n"))
-
-                    }
-                    else{
+                    } else {
                         Text("O relatório será gerado aqui")
                     }
                 }
