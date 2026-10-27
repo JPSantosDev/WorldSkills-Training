@@ -13,21 +13,24 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 class ConnectivityObserver (private val context: Context){
-
-
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-    private fun isOnline(): Boolean{
+    private fun isOnline(): Boolean {
         val network = connectivityManager.activeNetwork ?: return false
         val caps = connectivityManager.getNetworkCapabilities(network) ?: return false
-        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-                caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) &&
+                caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
+
     val isConnected: Flow<Boolean> = callbackFlow {
-        
-        val callback = object: ConnectivityManager.NetworkCallback(){
+        val callback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                trySend(isOnline())
+            }
+
             override fun onCapabilitiesChanged(
                 network: Network,
                 networkCapabilities: NetworkCapabilities
@@ -36,10 +39,6 @@ class ConnectivityObserver (private val context: Context){
             }
 
             override fun onLost(network: Network) {
-                trySend(isOnline())
-            }
-
-            override fun onAvailable(network: Network) {
                 trySend(isOnline())
             }
         }
