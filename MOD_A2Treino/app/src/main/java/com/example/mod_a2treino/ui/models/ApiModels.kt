@@ -1,7 +1,6 @@
 package com.example.mod_a2treino.ui.models
 
 import kotlinx.serialization.Serializable
-import java.io.File
 
 
 @Serializable

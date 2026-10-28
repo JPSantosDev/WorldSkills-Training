@@ -1,5 +1,6 @@
 package com.example.mod_a2treino.ui.screens
 
+import android.app.Activity
 import android.content.Context
 import android.util.Patterns
 import android.widget.Toast
@@ -58,13 +59,15 @@ fun LoginScreen(
     val scope = rememberCoroutineScope()
 
     fun validarEmail(email: String): Boolean {
-        return Patterns.EMAIL_ADDRESS .matcher(email) .matches()
+        return Patterns.EMAIL_ADDRESS.matcher(email) .matches()
     }
+
     fun validarSenha(senha: String): Boolean {
         val temNumero = senha.any{it.isDigit()}
         val temLetra = senha.any{it.isLetter()}
         return senha.length >= 6 && temLetra && temNumero
     }
+
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -96,6 +99,7 @@ fun LoginScreen(
             onValueChange = {
                 senha = it
                 senhaValid = validarSenha(it)
+
             },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password
@@ -121,20 +125,21 @@ fun LoginScreen(
         if (!state.firstLogin && state.rememberMe){
             Text("Pode usar biometria na próxima")
         }
-        else
+        else {
             Button(
                 onClick = {
-                    if (!senhaValid) Toast.makeText(context,"Verifique sua senha", Toast.LENGTH_SHORT).show()
-                    else if (!emailValid) Toast.makeText(context,"Verifique seu email", Toast.LENGTH_SHORT).show()
-                    else {
-                        scope.launch {
-                            val token = ApiClient.apiLogin(email,senha)
-                            TokenManager.setToken(token)
+                    scope.launch {
+                        val token = ApiClient.apiLogin(email, senha)
+                        TokenManager.setToken(token)
+                        if (state.firstLogin){
                             preferences.toggleFirstLogin()
-                            onLogin()
                         }
+                        onLogin()
                     }
                 }
-            ) {Text("Acessar Sistema") }
+            ){
+                Text("Acessar sistema")
+            }
+        }
     }
 }

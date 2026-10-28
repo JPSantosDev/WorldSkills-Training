@@ -14,6 +14,8 @@ import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +28,7 @@ import kotlinx.serialization.json.Json
 private const val BASE_URL = "https://workspace.dinizeotecnologia.com.br/worldskills"
 private const val JWT_URL = "$BASE_URL/jwt"
 private const val A2_URL = "$BASE_URL/A2"
+
 object ApiClient{
     val jsonInstance = Json {
         ignoreUnknownKeys = true
@@ -42,6 +45,7 @@ object ApiClient{
     suspend fun apiLogin(email: String, password: String): String = withContext(Dispatchers.IO) {
         val response = ApiClient.client.post {
             url("$JWT_URL/generate_token")
+            contentType(ContentType.Application.Json)
             setBody(LoginRequest(email, password))
         }
 
@@ -54,35 +58,20 @@ object ApiClient{
         token ?: throw Exception("Token ausente")
     }
 
-    suspend fun invalidToken(token: String = ""): TokenValidationResponse = withContext(Dispatchers.IO){
-        val response = ApiClient.client.post {
-            url("$JWT_URL/validate_token")
-            setBody(TokenValidationRequest(token))
-        }
-        if (!response.status.isSuccess()) {
-            throw IllegalStateException("Erro ao validar token. Código: ${response.status.value}")
-        }
-        val validationResponse = response.body<TokenValidationResponse>().valid
-        val payload = response.body<TokenValidationResponse>().payload
-
-        return@withContext TokenValidationResponse(
-            valid = validationResponse,
-            payload = payload
-        )
-    }
     suspend fun validateToken(token: String): TokenValidationResponse = withContext(Dispatchers.IO) {
         val response = ApiClient.client.post {
             url("$JWT_URL/validate_token")
+            contentType(ContentType.Application.Json)
             setBody(TokenValidationRequest(token))
         }
         if (!response.status.isSuccess()) {
             throw IllegalStateException("Erro ao validar token. Código: ${response.status.value}")
         }
-        val validationResponse = response.body<TokenValidationResponse>().valid
+        val valid = response.body<TokenValidationResponse>().valid
         val payload = response.body<TokenValidationResponse>().payload
 
         return@withContext TokenValidationResponse(
-            valid = validationResponse,
+            valid = valid,
             payload = payload
         )
     }
@@ -90,7 +79,6 @@ object ApiClient{
     suspend fun getMotd(): String = withContext(Dispatchers.IO) {
         val response = ApiClient.client.get {
             url("$A2_URL/motd")
-            setBody(Motd)
         }
         response.body<Motd>().message
     }
@@ -102,14 +90,21 @@ object ApiClient{
         response.body<List<String>>()
     }
 
-    suspend fun getSchoolList(): SchoolListResponse = withContext(Dispatchers.IO){
-        val response = ApiClient.client.get {
+    suspend fun getSchoolList(): SchoolListResponse = withContext(Dispatchers.IO) {
+        val response = client.get {
             url("$A2_URL/school_list")
-            setBody(SchoolListResponse)
+            contentType(ContentType.Application.Json)
         }
+        if (!response.status.isSuccess()){
+            throw IllegalStateException("Erro ao validar token. Código: ${response.status.value}")
+        }
+        val escolas = response.body<SchoolListResponse>().escolas
+        val total = response.body<SchoolListResponse>().total
 
-        response.body()
-
+        return@withContext SchoolListResponse(
+            escolas = escolas,
+            total = total
+        )
     }
 }
 
