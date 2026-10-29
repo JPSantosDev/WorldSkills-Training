@@ -1,5 +1,6 @@
 package com.example.simuladoa1.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +43,10 @@ fun HomeScreen(
     onGeniusPlay: () -> Unit,
     onMemoCheck: () -> Unit
 ) {
+
+    LaunchedEffect(Unit) {
+
+    }
 
     val drawerState = rememberDrawerState(
         initialValue = DrawerValue.Closed
@@ -101,8 +107,6 @@ fun HomeScreen(
                         selected = false,
                         onClick = { exitProcess(0) },
                     )
-
-
                 }
             }
         },

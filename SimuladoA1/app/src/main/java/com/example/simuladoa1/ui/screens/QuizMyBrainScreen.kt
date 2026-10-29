@@ -12,14 +12,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,8 +36,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
+import com.example.simuladoa1.ui.device.TiltObserver
+import com.example.simuladoa1.ui.device.selecoesPorInclinacao
 import com.example.simuladoa1.ui.models.DadosCurso
 import com.example.simuladoa1.ui.repository.DataRepository
+import com.example.simuladoa1.ui.screens.quizmybrain.MultiplaEscolha
+import com.example.simuladoa1.ui.screens.quizmybrain.Relacional
+import com.example.simuladoa1.ui.screens.quizmybrain.VerdadeiroFalso
 import kotlinx.serialization.json.decodeFromJsonElement
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,15 +55,19 @@ fun QuizMyBrainScreen(onHome: () -> Unit, ) {
     val context = LocalContext.current
     val activity = context as Activity
 
-    var requestedOrientation by rememberSaveable() { mutableIntStateOf(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) }
+    var requestedOrientation by remember { mutableIntStateOf(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) }
     var mostrarResultado by rememberSaveable() { mutableStateOf(false) }
 
     var score by rememberSaveable() { mutableIntStateOf(0) }
 
-    var questoes by remember() { mutableStateOf<List<DadosCurso>>(emptyList()) }
+    var questoes by rememberSaveable() { mutableStateOf<List<DadosCurso>>(emptyList()) }
     var questaoAtual by rememberSaveable() { mutableIntStateOf(0) }
     var alternativaSelecionada by remember() { mutableStateOf<Int?>(null) }
-
+    var alternativaSelecionadaRel by remember { mutableStateOf<Pair<Int, Int>?>(null) }
+    var encerrado by remember { mutableStateOf(false) }
+    var relacoes by rememberSaveable(questaoAtual) {
+        mutableStateOf<Map<Int, Int>>(emptyMap())
+    }
 
     LaunchedEffect(Unit){
         questoes = DataRepository.loadJson(context)
@@ -69,16 +81,27 @@ fun QuizMyBrainScreen(onHome: () -> Unit, ) {
         if (!mostrarResultado) {
             val questao = questoes[questaoAtual]
 
-            val resposta: Int = DataRepository.jsonInstance.decodeFromJsonElement(questao.resposta)
-            if (resposta == alternativaSelecionada) {
-                score+=questao.peso
+            if (questao.tipo == "VF" || questao.tipo == "ME"){
+
+                val resposta: Int = DataRepository.jsonInstance.decodeFromJsonElement(questao.resposta)
+                if (resposta == alternativaSelecionada) {
+                    score+=questao.peso
+                }
+
+            } else {
+                val resposta: List<List<Int>> = DataRepository.jsonInstance.decodeFromJsonElement(questao.resposta)
+                if (resposta == alternativaSelecionadaRel){
+                    score+=questao.peso
+                }
             }
+
             mostrarResultado = true
 
-        } else{
+        } else {
             questaoAtual++
             mostrarResultado = false
             alternativaSelecionada = null
+            alternativaSelecionadaRel = null
         }
     }
 
@@ -100,7 +123,9 @@ fun QuizMyBrainScreen(onHome: () -> Unit, ) {
                 actions = {
                     Row(Modifier.fillMaxWidth()) {
                         Button(
-                            onClick = {}
+                            onClick = {
+                                encerrado = true
+                            }
                         ) {
                             Text("Encerrar")
                         }
@@ -129,95 +154,46 @@ fun QuizMyBrainScreen(onHome: () -> Unit, ) {
 
                     "VF" -> {
                         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
-                        VerdadeiroFalso(questao)
+                        VerdadeiroFalso(
+                            questao = questao,
+                            alternativaSelecionada = alternativaSelecionada,
+                            onAlternativaSelecionada = { alternativaSelecionada = it },
+                            mostrarResultado = mostrarResultado,
+                        )
                     }
 
                     "ME" -> {
                         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
                         MultiplaEscolha(
-                            questao,
-                            mostrarResultado,
-                            alternativaSelecionada,
+                            questao = questao,
+                            mostrarResultado = mostrarResultado,
+                            alternativaSelecionada = alternativaSelecionada,
                             onAlternativaSelecionada = { alternativaSelecionada = it }
                         )
                     }
 
                     "REL" -> {
                         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                        Relacional(questao)
+                        Relacional(
+                            mostrarResultado = mostrarResultado ,
+                            questao = questao,
+                            relacoes = relacoes,
+                            onRelacionar = { termo, conceito ->
+                                relacoes = relacoes.filterValues { it != conceito } + (termo to conceito)
+                            },
+                        )
                     }
+                }
+            }
+            if (encerrado){
+                Column(Modifier.fillMaxWidth()) {
+                    Text(score.toString())
                 }
             }
         }
     }
 }
 
-// As telas do QuizMyBrain
-@Composable
-fun MultiplaEscolha(
-    questao: DadosCurso,
-    mostrarResultado: Boolean,
-    alternativaSelecionada: Int?,
-    onAlternativaSelecionada: (Int) -> Unit
-) {
 
-    val scroll = rememberScrollState()
 
-    val resposta: Int = DataRepository.jsonInstance.decodeFromJsonElement(questao.resposta)
-
-    val opcoes: List<String> = DataRepository.jsonInstance.decodeFromJsonElement(questao.alternativas)
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .verticalScroll(scroll)
-    ) {
-
-        Text(text = questao.enunciado)
-
-        opcoes.forEachIndexed { index, opcao ->
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                RadioButton(
-                    selected = alternativaSelecionada == index,
-                    onClick = {
-                        if (!mostrarResultado) {
-                            onAlternativaSelecionada(index)
-                        }
-                    }
-                )
-
-                Text("${'a' + index}) $opcao")
-            }
-        }
-
-        if (mostrarResultado) {
-
-            if (alternativaSelecionada == resposta) {
-                Text(
-                    text = "Resposta correta! +${questao.peso} pontos"
-                )
-            } else {
-                Text(
-                    text = "Resposta incorreta!"
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun Relacional(questao: DadosCurso){
-
-}
-@Composable
-fun VerdadeiroFalso(questao: DadosCurso){
-
-}
